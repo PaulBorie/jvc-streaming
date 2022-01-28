@@ -57,7 +57,7 @@ borie@branche:~$ docker-logs -f pseudo
 ```
 
 Recherche juste un pseudo en particulier (ici le mien) dans le flux des messages et affiche tous les messages de ce pseudo dans le flux de sortie. 
-En l'occurence ce dernier était plus pour le débuggage du flux issu du scraping pour voir si ce dernier ne faisait pas ressortir des messages en doubles, qu'ils étaient tous pris en compte etc..
+En l'occurence ce dernier était plus pour le débuggage du flux issu du scraping pour voir si ce dernier ne faisait pas ressortir des messages en double, qu'ils étaient tous pris en compte etc..
 
 # Architecture
 
@@ -67,7 +67,7 @@ Le scraper est écrit en Python. Nous avons prégéré utilisé les **coroutines
 
 Les **coroutines** sont idéales pour l'exécution de plusieurs tâches simultanées qui sont I/O bound, c'est le cas pour le scraper qui effectue une cinquantaine de requêtes toutes les secondes. Le concept général d'asyncio est qu'un seul objet Python, appelé `event loop`, contrôle comment et quand chaque tâche est exécutée. La boucle d'événements est consciente de chaque tâche et sait dans quel état elle se trouve. Le keyword `await` peut être placé devant une tâche qui risque de durer longtemps (I/O task par exemple une reqûete réseau) et permet d'indiquer à l'`event loop` que c'est une tâche qui peut mettre du temps et qu'il vaut mieux qu'il passe à une autre le temps que cette dernière se termine. C'est le cas pour toutes les requêtes réseaux dans notre scraper, l'`event loop` peut donc attaquer les tâches de parsing par exemple en attendant les tâches réseaux. 
 
-On a donc une **coroutine** qui rafraichit les derniers topics en boucle et les place dans une `Queue` et on a **60 autres coroutines** qui vont récupérer les topics dans la `Queue`, les requêter et récupérer les derniers messages dessus. Pour éviter les doublons, un "marque page" est placé dans une base de donnée Redis après chaque lecture de Topic pour sauvegarder à quel message on est arrivé. Ainsi si quelqu'un poste à nouveau sur un Topic et qu'il se retrouve à nouveau dans la `Queue` on va pouvour reprendre le scraping au dernier message traité. Grâce à cette architecture on obtient un flux en temps réel de tous les messages postés sur le forum (sauf erreur de réseau, pas de mécanismes de Retry) et on a pas de doublons. 
+On a donc une **coroutine** qui rafraichit les derniers topics en boucle et les place dans une `Queue` et on a **60 autres coroutines** qui vont récupérer les topics dans la `Queue`, les requêter et récupérer les derniers messages dessus. Pour éviter les doublons, un "marque page" est placé dans une base de donnée **Redis** après chaque lecture de Topic pour sauvegarder à quel message on est arrivé. Ainsi si quelqu'un poste à nouveau sur un Topic et qu'il se retrouve à nouveau dans la `Queue` on va pouvour reprendre le scraping au dernier message traité. Grâce à cette architecture on obtient **un flux en temps réel** de tous les messages postés sur le forum (sauf erreur de réseau, pas de mécanismes de Retry) et on a pas de **doublons**. 
 
 ## Spark Streaming 
 
