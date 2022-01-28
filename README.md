@@ -7,7 +7,7 @@ Le but de ce petit projet est de récupérer un **flux** des messages postés su
 Un `docker-compose` est fourni. 
 
 ```bash
-borie@branche:~$ git clone https://github.com/PaulBorie/jvc-streaming.git && cd jvc-streaming && cd docker
+borie@branche:~$ git clone https://github.com/PaulBorie/jvc-streaming.git && cd jvc-streaming/docker
 borie@branche:~$ docker-compose up -d
 ```
 Attendre quelques secondes que tous les éléments se lancent...
