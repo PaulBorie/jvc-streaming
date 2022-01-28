@@ -1,0 +1,4 @@
+aioredis==2.0.1
+beautifulsoup4==4.10.0
+requests_html==0.10.0
+pyppeteer==0.2.6

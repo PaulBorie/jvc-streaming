@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+
+  redis:
+    image: redis:6.2-alpine
+    expose:
+      - '6379'
+    command: redis-server
+    volumes: 
+      - cache:/data
+
+  scraper:
+    image: paulborielabs/scraper-jvc
+    container_name: scraper
+    environment:
+      - REDIS_HOST=redis
+    ports:
+      - '6667:6667'
+  
+  spark-stickers:
+    image: paulborielabs/spark-stickers
+    container_name: stickers
+    environment:
+      - SCRAPER_HOST=scraper
+
+  spark-auteurs:
+    image: paulborielabs/spark-auteurs
+    container_name: auteurs
+    environment:
+      - SCRAPER_HOST=scraper
+
+  spark-wordcount:
+    image: paulborielabs/spark-statefullwordcount
+    container_name: wordcount
+    environment:
+      - SCRAPER_HOST=scraper
+
+  spark-pseudo:
+    image: paulborielabs/spark-pseudo
+    container_name: pseudo
+    environment:
+      - SCRAPER_HOST=scraper
+
+volumes:
+  cache:
+    driver: local
